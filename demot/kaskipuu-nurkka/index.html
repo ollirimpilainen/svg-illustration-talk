@@ -769,6 +769,12 @@ new ResizeObserver(resize).observe(stage);
 resize(); home();
 
 renderer.setAnimationLoop(() => { controls.update(); composer.render(); });
+
+/* Presentation: parent page picks the exterior colour via postMessage({kpColor:'05'}). */
+addEventListener('message', e => {
+  const id = e.data && e.data.kpColor; if (id == null) return;
+  const c = COLORS.find(x => x.id === String(id)); if (c) setColor(c);
+});
 </script>
 
 </body></html><script>addEventListener("message",function(e){if(!e.data||e.data.svgp==null)return;var x=document.getElementById("explode");if(!x)return;var p=Math.min(1,Math.max(0,(e.data.svgp-.1)/.8));x.value=Math.round(p*100);x.dispatchEvent(new Event("input"))});</script>
