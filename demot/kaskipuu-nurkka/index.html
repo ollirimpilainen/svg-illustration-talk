@@ -1,0 +1,774 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>header,aside,.stage-ui,.hint{display:none!important}html,body{background:transparent!important;height:100%}main{grid-template-columns:1fr!important;padding:0!important;height:100vh}.stage{background:#f2f3f6!important;border-radius:0!important;height:100vh}</style></head><body>
+<title>Ikkunan nurkkaleikkaus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: technical sheet. 3D stage left, parts schedule right; stacked on phones. */
+:root{
+  --bg:#eceeec; --stage:#f0f1ef; --panel:#f7f8f6; --fg:#1b2220; --muted:#59645f; --line:#cdd3cf;
+  --accent:#2d7a66; --on-accent:#ffffff; --accent-soft:rgba(45,122,102,.12);
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131817; --stage:#262b2a; --panel:#171d1c; --fg:#e5ebe8; --muted:#98a5a0; --line:#2c3533;
+  --accent:#6cc3a7; --on-accent:#0f1513; --accent-soft:rgba(108,195,167,.14); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131817; --stage:#262b2a; --panel:#171d1c; --fg:#e5ebe8; --muted:#98a5a0; --line:#2c3533;
+  --accent:#6cc3a7; --on-accent:#0f1513; --accent-soft:rgba(108,195,167,.14); color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-display);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;
+  display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 32px;padding-block:18px 14px;border-bottom:1px solid var(--line)}
+.eyebrow,.h{font:500 11px/1.2 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(22px,3vw,30px);line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:4px 0 0;text-wrap:balance}
+header p{margin:0;color:var(--muted);max-width:58ch;font-size:14px}
+main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;padding-block:16px}
+.stage{position:relative;min-height:420px;background:var(--stage);border-radius:6px;overflow:hidden}
+.stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.stage-ui{position:absolute;top:12px;right:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{font:500 13px/1 var(--f-display);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 11px;cursor:pointer}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn:focus-visible,.part:focus-visible,.color:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{position:absolute;left:12px;right:12px;bottom:10px;font:400 11.5px/1.4 var(--f-mono);color:var(--muted);pointer-events:none}
+.tip{position:absolute;left:0;top:0;pointer-events:none;background:var(--fg);color:var(--bg);font:500 12.5px/1 var(--f-display);padding:6px 8px;border-radius:3px;white-space:nowrap}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+aside{min-width:0;overflow:auto;display:flex;flex-direction:column;gap:22px;padding-bottom:4px}
+aside section{display:flex;flex-direction:column;gap:10px}
+.info{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;min-height:142px}
+.info h2{font-size:20px;line-height:1.2;margin:6px 0;font-weight:650}
+.info p{margin:0;color:var(--muted);font-size:14px}
+.colors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.color{appearance:none;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;min-width:0}
+.color .chip{width:100%;height:22px;border-radius:2px;background:var(--c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18)}
+.color .cn{font-size:12.5px;line-height:1.2;font-weight:550;overflow-wrap:anywhere}
+.color .cc{font:400 11px var(--f-mono);color:var(--muted)}
+.color[aria-checked="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.compare{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:start}
+.compare img{width:96px;height:auto;border-radius:3px;background:#fff;border:1px solid var(--line);display:block}
+.compare p{margin:0;font-size:13px;color:var(--muted)}
+.range{display:flex;align-items:center;gap:12px}
+.range input{flex:1;min-width:0;accent-color:var(--accent)}
+.val{font:500 12px var(--f-mono);font-variant-numeric:tabular-nums;min-width:5ch;text-align:right;color:var(--muted)}
+.parts{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.part{appearance:none;font:inherit;color:inherit;background:none;border:0;border-bottom:1px solid var(--line);width:100%;text-align:left;
+  display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 6px;cursor:pointer;font-size:14px}
+.part:hover,.part.hot{background:var(--accent-soft)}
+.part[aria-pressed="true"]{background:var(--accent-soft);font-weight:650}
+.sw{width:14px;height:14px;border-radius:2px;background:var(--sw);box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
+.tg{font:400 11.5px var(--f-mono);color:var(--muted)}
+dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:0;font-size:13.5px}
+dt{color:var(--muted)} dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.note{font-size:12.5px;color:var(--muted);margin:0;max-width:60ch}
+@media (max-width:860px){
+  html,body{height:auto}
+  main{grid-template-columns:minmax(0,1fr)}
+  .stage{height:62vh;min-height:360px}
+  aside{overflow:visible}
+}
+</style>
+
+<header>
+  <div>
+    <div class="eyebrow">Leikkausmalli · puu-alumiini</div>
+    <h1>Ikkunan nurkkaleikkaus</h1>
+  </div>
+  <p>Ikkunan alanurkka leikattuna auki: karmi, kaksi puitetta, kolme lasia ja niiden väliset osat. Pyöritä mallia, vaihda ulkopinnan väriä ja valitse osa nähdäksesi, mikä se on.</p>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="stage-ui">
+      <button class="btn" id="rotBtn" type="button" aria-pressed="true">Pyöritä itsestään</button>
+      <button class="btn" id="homeBtn" type="button">Palauta näkymä</button>
+    </div>
+    <div class="hint">Vedä: pyöritä · Rulla tai nipistys: zoomaa · Oikea painike tai kaksi sormea: siirrä</div>
+    <div class="tip" id="tip" hidden></div>
+  </div>
+
+  <aside>
+    <div class="info" aria-live="polite">
+      <div class="eyebrow" id="infoTag">Osa</div>
+      <h2 id="infoName">Valitse osa</h2>
+      <p id="infoDesc">Napauta osaa mallissa tai listassa. Valittu osa korostuu ja muut himmenevät.</p>
+    </div>
+
+    <section>
+      <div class="h" id="colorsLabel">Ulkopinnan väri</div>
+      <div class="colors" id="colors" role="radiogroup" aria-labelledby="colorsLabel"></div>
+      <div class="compare">
+        <img id="cmpImg" alt="" width="96" height="144">
+        <p id="cmpText">Väri koskee kaikkia maalattuja pintoja sisältä ja ulkoa. Helat ja lasit pysyvät ennallaan. Kuvassa sama ikkuna valokuvana.</p>
+      </div>
+    </section>
+
+    <section>
+      <label class="h" for="explode">Räjäytys</label>
+      <div class="range"><input id="explode" type="range" min="0" max="100" value="0"><span class="val" id="explodeVal">0 %</span></div>
+    </section>
+
+    <section>
+      <div class="h">Osat</div>
+      <ul class="parts" id="parts"></ul>
+    </section>
+
+    <section>
+      <div class="h">Mitat, arvio</div>
+      <dl>
+        <dt>Karmin syvyys</dt><dd>166 mm</dd>
+        <dt>Ulkolasi</dt><dd>4 mm</dd>
+        <dt>Eristyslasi</dt><dd>4-16-4</dd>
+        <dt>Lasien väli</dt><dd>≈ 90 mm</dd>
+        <dt>Leikattu nurkka</dt><dd>300 × 380 mm</dd>
+      </dl>
+      <p class="note">Mitat on arvioitu valokuvasta, ja värisävyt ovat näytöllä likimääräisiä. Malli havainnollistaa rakennetta, se ei ole valmistajan piirustus.</p>
+    </section>
+  </aside>
+</main>
+
+<script type="importmap">
+{"imports":{
+  "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* Units are millimetres. x runs through the window from outside (0) to inside (~172).
+   The bottom rail runs along +z, the hinge-side stile along +y, mitred at the origin.
+   Profiles are drawn as (x, n): n is the distance from the frame's outer edge toward the opening. */
+const L = 300, H = 380;
+
+const COLORS = [
+  { id:'01', name:'Valkoinen', code:'RAL 9010', hex:'#f0ede4', img:'kuvat/kauttaaltaan/01-ral9010-valkoinen.jpg' },
+  { id:'02', name:'Grafiitinharmaa', code:'RAL 7024', hex:'#45484e', img:'kuvat/kauttaaltaan/02-ral7024-grafiitinharmaa.jpg' },
+  { id:'03', name:'Tummanruskea', code:'RR32', hex:'#3d2a1f', img:'kuvat/kauttaaltaan/03-rr32-tummanruskea.jpg' },
+  { id:'04', name:'Tummanharmaa', code:'RR23', hex:'#66696b', img:'kuvat/kauttaaltaan/04-rr23-tummanharmaa.jpg' },
+  { id:'05', name:'Musta', code:'RR33', hex:'#18191a', img:'kuvat/kauttaaltaan/05-rr33-musta.jpg' },
+  { id:'06', name:'Vaaleanharmaa', code:'RR21', hex:'#9ba9af', img:'kuvat/kauttaaltaan/06-rr21-vaaleanharmaa.jpg' },
+];
+
+const PARTS = [
+  {id:'karmi', name:'Karmi', tag:'puu', sw:'var(--alu)', desc:'Ikkunan kantava runko. Se kiinnitetään seinän aukkoon, ja puitteet saranoidaan siihen.'},
+  {id:'verhous', name:'Alumiiniverhous', tag:'alumiini', sw:'var(--alu)', desc:'Karmin ulkopinnan alumiiniprofiili suojaa puuta sateelta ja auringolta. Puun ja alumiinin väliin jää tuuletusrako.'},
+  {id:'klipsi', name:'Kiinnike', tag:'muovi', sw:'#bdb5a3', desc:'Muovinen kiinnike pitää alumiiniverhouksen karmissa ja katkaisee kylmäsillan puun ja alumiinin väliltä.'},
+  {id:'ulkopuite', name:'Ulkopuite', tag:'alumiini', sw:'var(--alu)', desc:'Alumiininen ulkopuite kantaa ulkolasin. Sisäpinnan pieni aukko tuulettaa puitteiden välistä tilaa, jotta lasit eivät huurru.'},
+  {id:'ulkolasi', name:'Ulkolasi', tag:'4 mm', sw:'#bfe3d4', desc:'Yksinkertainen lasi ulkopuitteessa. Se on kiinni alumiiniprofiilin urassa.'},
+  {id:'sisapuite', name:'Sisäpuite', tag:'puu', sw:'var(--alu)', desc:'Sisään aukeava puite, joka kantaa eristyslasin. Painike on tässä puitteessa.'},
+  {id:'eristyslasi', name:'Eristyslasi', tag:'4-16-4', sw:'#a9d8c6', desc:'Kaksi lasia ja niiden välissä suljettu kaasutäytteinen väli. Eristää lämpöä ja ääntä.'},
+  {id:'valilista', name:'Välilista ja saumaus', tag:'alu + massa', sw:'#8f979e', desc:'Välilista pitää eristyslasin lasit erillään, ja reunan musta saumausmassa sulkee lasivälin ilmatiiviiksi.'},
+  {id:'tiivisteet', name:'Tiivisteet', tag:'kumi', sw:'#2e3133', desc:'Puitteiden ja karmin väliset tiivisteet pysäyttävät vedon ja sadeveden.'},
+  {id:'saranat', name:'Saranat', tag:'helat', sw:'#f2f1ec', desc:'Saranat ovat karmin saranapuolella. Puitteet kääntyvät niiden varassa auki.'},
+  {id:'painike', name:'Painike', tag:'helat', sw:'#f7f6f2', desc:'Avaa ja lukitsee sisäpuitteen.'},
+];
+const P = {}; PARTS.forEach(p => { p.meshes = []; P[p.id] = p; });
+
+/* Renderer, scene, post-processing */
+const stage = document.getElementById('stage');
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias:false, powerPreference:'high-performance' });
+} catch (e) {
+  const d = document.createElement('div'); d.className = 'fallback';
+  d.textContent = 'Selain ei tue WebGL-grafiikkaa, joten 3D-mallia ei voi näyttää.';
+  stage.appendChild(d); throw e;
+}
+const PR = Math.min(window.devicePixelRatio || 1, 2);
+renderer.setPixelRatio(Math.min(PR,1.25));
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+stage.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+/* Photo studio for reflections: a soft grey dome with a large key softbox, two tall strip lights and an overhead strip.
+   The long profiles pick these up as the streaks of light you see on painted joinery. */
+function studioEnv(){
+  const s = new THREE.Scene();
+  const dome = new THREE.SphereGeometry(30, 48, 24), p = dome.attributes.position, col = [];
+  for (let i = 0; i < p.count; i++) {
+    const y = p.getY(i) / 30, v = y > 0 ? THREE.MathUtils.lerp(.3, .44, y) : THREE.MathUtils.lerp(.3, .2, Math.min(1, -y * 2.5));
+    col.push(v, v * .992, v * .975);
+  }
+  dome.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  s.add(new THREE.Mesh(dome, new THREE.MeshBasicMaterial({ vertexColors:true, side:THREE.BackSide })));
+  const panel = (w, h, k, pos, tint = 0xffffff) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color:new THREE.Color(tint).multiplyScalar(k), side:THREE.DoubleSide }));
+    m.position.set(...pos); m.lookAt(0, 0, 0); s.add(m);
+  };
+  panel(13, 8, 5, [-9, 14, 15], 0xfff5e8);
+  panel(1.6, 20, 7, [-19, 4, 4]);
+  panel(1.6, 20, 5.5, [17, 5, 10], 0xeef3ff);
+  panel(26, 1.4, 4.5, [0, 21, -3]);
+  panel(10, 12, 2.6, [8, 6, -19]);
+  panel(1.6, 18, 4, [-17, 5, -11]);
+  panel(14, 8, 1.25, [-14, -8, -12], 0xf2f4f6);
+  panel(16, 5, 1.6, [2, 1, 22]);
+  const t = pmrem.fromScene(s, .012, .1, 100).texture;
+  s.traverse(o => { o.geometry?.dispose(); o.material?.dispose(); });
+  return t;
+}
+scene.environment = studioEnv();
+
+function syncBackground(){ scene.background = new THREE.Color(getComputedStyle(stage).backgroundColor); }
+syncBackground();
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncBackground);
+new MutationObserver(syncBackground).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
+const camera = new THREE.PerspectiveCamera(30, 1, 5, 8000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 220;
+controls.maxDistance = 2200;
+controls.maxPolarAngle = Math.PI * 0.9;
+controls.autoRotateSpeed = 0.6;
+
+const sun = new THREE.DirectionalLight(0xfffaf2, 2.1);
+sun.position.set(-420, 1000, 620);
+sun.target.position.set(0, 150, 0);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.radius = 14;
+Object.assign(sun.shadow.camera, { left:-480, right:480, top:480, bottom:-480, near:200, far:2600 });
+sun.shadow.bias = -0.0003;
+sun.shadow.normalBias = 0.8;
+scene.add(sun, sun.target);
+const fill = new THREE.DirectionalLight(0xf3f6ff, 0.5);
+fill.position.set(700, 300, -200);
+scene.add(fill);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000).rotateX(-Math.PI/2), new THREE.ShadowMaterial({ opacity:0.5 }));
+ground.position.y = -2.5;
+ground.receiveShadow = true;
+scene.add(ground);
+{ const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');const gr=g.createRadialGradient(256,256,0,256,256,256);gr.addColorStop(0,'rgba(20,28,40,.42)');gr.addColorStop(.45,'rgba(20,28,40,.18)');gr.addColorStop(1,'rgba(20,28,40,0)');g.fillStyle=gr;g.fillRect(0,0,512,512);
+  const tex=new THREE.CanvasTexture(c);const m=new THREE.Mesh(new THREE.PlaneGeometry(1100,820).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));m.position.set(40,-2,10);scene.add(m); }
+
+
+const model = new THREE.Group();
+model.position.set(-89, 0, -150);
+scene.add(model);
+
+const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type:THREE.HalfFloatType, samples:4 }));
+composer.setPixelRatio(1);
+composer.addPass(new RenderPass(scene, camera));
+const gtao = new GTAOPass(scene, camera, 1, 1);
+gtao.updateGtaoMaterial({ radius:45, distanceExponent:1, thickness:30, scale:1.6, samples:8, distanceFallOff:1, screenSpaceRadius:false });
+gtao.updatePdMaterial({ lumaPhi:10, depthPhi:2, normalPhi:3, radius:5, rings:2, samples:16 });
+gtao.blendIntensity = 1;
+composer.addPass(gtao);
+composer.addPass(new OutputPass());
+
+/* Procedural surface textures */
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+function canvasTex(size, draw, srgb = false){
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  draw(c.getContext('2d'), size);
+  const t = new THREE.CanvasTexture(c);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+}
+function grain(g, S, amount){
+  const id = g.getImageData(0, 0, S, S);
+  for (let k = 0; k < id.data.length; k += 4) { const n = (rnd() - .5) * amount; id.data[k] += n; id.data[k+1] += n; id.data[k+2] += n; }
+  g.putImageData(id, 0, 0);
+}
+/* Long grain under the paint: lines run along the profile length (u). */
+const woodGrain = canvasTex(1024, (g, S) => {
+  g.fillStyle = '#808080'; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 320; i++) {
+    const y = rnd() * S, amp = 1 + rnd() * 7, f = .0015 + rnd() * .004, ph = rnd() * 6, v = Math.round(70 + rnd() * 110);
+    g.strokeStyle = `rgba(${v},${v},${v},${.12 + rnd() * .22})`; g.lineWidth = .6 + rnd() * 2.8;
+    g.beginPath();
+    for (let x = 0; x <= S; x += 12) { const yy = y + Math.sin(x * f + ph) * amp; x ? g.lineTo(x, yy) : g.moveTo(x, yy); }
+    g.stroke();
+  }
+  grain(g, S, 16);
+});
+/* End grain on the cut faces: growth rings. */
+const endGrain = canvasTex(1024, (g, S) => {
+  g.fillStyle = '#f2eee6'; g.fillRect(0, 0, S, S);
+  const cx = -S * .45, cy = S * 1.35;
+  for (let r = 40; r < S * 2.6; r += 9 + rnd() * 16) {
+    g.beginPath(); g.arc(cx + (rnd() - .5) * 6, cy, r, 0, Math.PI * 2);
+    g.strokeStyle = `rgba(150,136,112,${.16 + rnd() * .2})`; g.lineWidth = 1.5 + rnd() * 3.5; g.stroke();
+  }
+  for (let i = 0; i < 160; i++) {
+    const a = rnd() * Math.PI * 2, r0 = rnd() * S * 2.4;
+    g.strokeStyle = `rgba(150,136,112,.06)`; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.lineTo(cx + Math.cos(a) * (r0 + 60), cy + Math.sin(a) * (r0 + 60)); g.stroke();
+  }
+  grain(g, S, 10);
+}, true);
+/* Tileable value noise, summed over octaves; returns heights 0..1. */
+function noiseTile(S, layers){
+  const h = new Float32Array(S * S), sm = t => t * t * (3 - 2 * t);
+  for (const [cx, cy, amp] of layers) {
+    const grid = new Float32Array(cx * cy); for (let i = 0; i < grid.length; i++) grid[i] = rnd();
+    for (let y = 0; y < S; y++) {
+      const fy = y / S * cy, y0 = Math.floor(fy), ty = sm(fy - y0), r0 = (y0 % cy) * cx, r1 = ((y0 + 1) % cy) * cx;
+      for (let x = 0; x < S; x++) {
+        const fx = x / S * cx, x0 = Math.floor(fx), tx = sm(fx - x0), a = x0 % cx, b = (x0 + 1) % cx;
+        const top = grid[r0 + a] + (grid[r0 + b] - grid[r0 + a]) * tx, bot = grid[r1 + a] + (grid[r1 + b] - grid[r1 + a]) * tx;
+        h[y * S + x] += (top + (bot - top) * ty) * amp;
+      }
+    }
+  }
+  let lo = Infinity, hi = -Infinity; for (const v of h) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
+  for (let i = 0; i < h.length; i++) h[i] = (h[i] - lo) / (hi - lo);
+  return h;
+}
+function heightCanvas(S, h){
+  return (g) => { const id = g.createImageData(S, S); for (let i = 0; i < h.length; i++) { const v = h[i] * 255; id.data[i*4] = id.data[i*4+1] = id.data[i*4+2] = v; id.data[i*4+3] = 255; } g.putImageData(id, 0, 0); };
+}
+/* Tangent space normal map from a grey height texture, so reflections ripple instead of only the shading. */
+function normalFrom(tex, strength){
+  const src = tex.image, S = src.width, d = src.getContext('2d').getImageData(0, 0, S, S).data, h = new Float32Array(S * S);
+  for (let i = 0; i < h.length; i++) h[i] = d[i * 4] / 255;
+  const n = canvasTex(S, g => {
+    const id = g.createImageData(S, S);
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const dx = (h[y*S + (x + 1) % S] - h[y*S + (x - 1 + S) % S]) * strength;
+      const dy = (h[((y + 1) % S)*S + x] - h[((y - 1 + S) % S)*S + x]) * strength;
+      const l = Math.hypot(dx, dy, 1), k = (y*S + x) * 4;
+      id.data[k] = (-dx / l * .5 + .5) * 255; id.data[k+1] = (dy / l * .5 + .5) * 255; id.data[k+2] = (1 / l * .5 + .5) * 255; id.data[k+3] = 255;
+    }
+    g.putImageData(id, 0, 0);
+  });
+  n.repeat.copy(tex.repeat);
+  return n;
+}
+/* Paint orange peel: soft waves a few millimetres long, the texture every sprayed or powder coated surface has. */
+const peel = canvasTex(512, heightCanvas(512, noiseTile(512, [[24,24,1],[48,48,.55],[96,96,.25],[192,192,.08]])));
+peel.repeat.set(9, 9);
+const peelN = normalFrom(peel, 1.1);
+const woodN = normalFrom(woodGrain, 1.6);
+/* Bare pine on the cut: pale earlywood, darker resinous latewood bands, rays and fine saw marks. */
+const pineGrain = canvasTex(1024, (g, S) => {
+  g.fillStyle = '#ead3a4'; g.fillRect(0, 0, S, S);
+  const cx = -S * .5, cy = S * 1.45;
+  for (let r = 30; r < S * 2.8; r += 8 + rnd() * 15) {
+    const w = 1.5 + rnd() * 4, ox = (rnd() - .5) * 5;
+    const grd = g.createRadialGradient(cx + ox, cy, Math.max(1, r - w * 2.2), cx + ox, cy, r + w * .4);
+    grd.addColorStop(0, 'rgba(196,140,78,0)'); grd.addColorStop(.75, `rgba(178,118,58,${.28 + rnd() * .3})`); grd.addColorStop(1, 'rgba(178,118,58,0)');
+    g.strokeStyle = grd; g.lineWidth = w * 2.6; g.beginPath(); g.arc(cx + ox, cy, r - w * .6, 0, Math.PI * 2); g.stroke();
+  }
+  for (let i = 0; i < 260; i++) {
+    const a = rnd() * Math.PI * 2, r0 = rnd() * S * 2.6;
+    g.strokeStyle = `rgba(150,104,60,${.05 + rnd() * .05})`; g.lineWidth = .8;
+    g.beginPath(); g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); g.lineTo(cx + Math.cos(a) * (r0 + 40 + rnd() * 80), cy + Math.sin(a) * (r0 + 40 + rnd() * 80)); g.stroke();
+  }
+  for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(140,90,40,.35)'; g.beginPath(); g.arc(rnd() * S, rnd() * S, .8 + rnd() * 1.6, 0, Math.PI * 2); g.fill(); }
+  for (let i = 0; i < 90; i++) {
+    const y = rnd() * S; g.strokeStyle = `rgba(255,248,232,${.05 + rnd() * .07})`; g.lineWidth = 1 + rnd() * 2;
+    g.beginPath(); g.moveTo(0, y); g.lineTo(S, y + (rnd() - .5) * 10); g.stroke();
+  }
+  grain(g, S, 14);
+}, true);
+/* Sawn aluminium on the cut ends. */
+const sawn = canvasTex(512, (g, S) => {
+  g.fillStyle = '#9a9a9a'; g.fillRect(0, 0, S, S);
+  for (let i = 0; i < 700; i++) {
+    const y = rnd() * S, v = Math.round(110 + rnd() * 120);
+    g.strokeStyle = `rgba(${v},${v},${v},.35)`; g.lineWidth = .5 + rnd() * 1.6;
+    g.beginPath(); g.moveTo(0, y); g.bezierCurveTo(S * .3, y + 6, S * .7, y - 6, S, y + (rnd() - .5) * 4); g.stroke();
+  }
+  grain(g, S, 20);
+});
+/* Plastic micro texture for the fittings. */
+const plasticTex = canvasTex(256, (g, S) => { g.fillStyle = '#c8c8c8'; g.fillRect(0, 0, S, S); grain(g, S, 26); });
+
+/* Materials */
+const aluSide = [], paintSide = [], endCaps = [];
+let aluHex = COLORS[0].hex;
+const M = {
+  paint:   () => {
+    /* Factory painted pine: satin base with the grain faintly telegraphing through, a sharper lacquer sheen on top. */
+    const side = new THREE.MeshPhysicalMaterial({ color:aluHex, roughness:.82, roughnessMap:woodGrain, normalMap:woodN, normalScale:new THREE.Vector2(.3, .3),
+      clearcoat:.55, clearcoatRoughness:.2, clearcoatNormalMap:peelN, clearcoatNormalScale:new THREE.Vector2(.14, .14), envMapIntensity:1 });
+    const cap = new THREE.MeshStandardMaterial({ color:0xffffff, map:endGrain, bumpMap:endGrain, bumpScale:1.1, roughness:.88, envMapIntensity:.7 });
+    paintSide.push(side); endCaps.push(cap);
+    return [side, cap];
+  },
+  alu:     () => {
+    /* Powder coated aluminium: semi gloss with visible orange peel in the reflections. */
+    const side = new THREE.MeshPhysicalMaterial({ color:aluHex, roughness:.5, metalness:0, normalMap:peelN, normalScale:new THREE.Vector2(.12, .12),
+      clearcoat:.6, clearcoatRoughness:.15, clearcoatNormalMap:peelN, clearcoatNormalScale:new THREE.Vector2(.16, .16), envMapIntensity:1 });
+    aluSide.push(side);
+    return [side, new THREE.MeshStandardMaterial({ color:0xe2e5e8, metalness:.55, roughness:.5, roughnessMap:sawn, bumpMap:sawn, bumpScale:.35 })];
+  },
+  clip:    () => one(new THREE.MeshStandardMaterial({ color:0xbdb5a3, roughness:.72, bumpMap:plasticTex, bumpScale:.2 })),
+  seal:    () => one(new THREE.MeshPhysicalMaterial({ color:0x262829, roughness:.78, bumpMap:plasticTex, bumpScale:.3, sheen:.6, sheenRoughness:.5, sheenColor:new THREE.Color(0x6a6e72) })),
+  sealant: () => one(new THREE.MeshStandardMaterial({ color:0x111213, roughness:.55 })),
+  spacer:  () => [new THREE.MeshPhysicalMaterial({ color:0xbcc1c6, metalness:.95, roughness:.34, anisotropy:.75 }), new THREE.MeshStandardMaterial({ color:0xc9ccd0, metalness:1, roughness:.4 })],
+  glass:   () => [
+    new THREE.MeshPhysicalMaterial({ color:0xffffff, metalness:0, roughness:.02, transmission:1, thickness:4, ior:1.52,
+      attenuationColor:new THREE.Color(0xcfeadf), attenuationDistance:24, specularIntensity:1, envMapIntensity:1.2 }),
+    new THREE.MeshPhysicalMaterial({ color:0x5d8f7c, roughness:.25, metalness:0, transparent:true, opacity:.7 })],
+};
+const one = m => [m, m];
+const plastic = () => new THREE.MeshPhysicalMaterial({ color:0xf4f3ef, roughness:.34, roughnessMap:plasticTex, clearcoat:.45, clearcoatRoughness:.28, envMapIntensity:1 });
+
+/* Profile helpers */
+function signedArea(c){ let a = 0; for (let i = 0; i < c.length; i++) { const p = c[i], q = c[(i + 1) % c.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; }
+const orient = (c, ccw) => ((signedArea(c) > 0) === ccw ? c : c.slice().reverse());
+/* Round every corner (r is a number or one radius per vertex). Paint and powder coat never leave knife edges. */
+function roundPoly(c, r, seg = 4){
+  const out = [], N = c.length;
+  for (let i = 0; i < N; i++) {
+    const p = c[(i - 1 + N) % N], v = c[i], q = c[(i + 1) % N];
+    const rr = Array.isArray(r) ? r[i] : r;
+    const l1 = Math.hypot(v[0] - p[0], v[1] - p[1]), l2 = Math.hypot(q[0] - v[0], q[1] - v[1]);
+    const d = Math.min(rr, l1 * .45, l2 * .45);
+    if (d < .05) { out.push(v); continue; }
+    const a = [v[0] + (p[0] - v[0]) / l1 * d, v[1] + (p[1] - v[1]) / l1 * d];
+    const b = [v[0] + (q[0] - v[0]) / l2 * d, v[1] + (q[1] - v[1]) / l2 * d];
+    for (let k = 0; k <= seg; k++) { const t = k / seg, u = 1 - t; out.push([u*u*a[0] + 2*u*t*v[0] + t*t*b[0], u*u*a[1] + 2*u*t*v[1] + t*t*b[1]]); }
+  }
+  return out;
+}
+
+/* Sweep a profile (with optional hollow chambers) along one leg: square cut at the free end, mitre at the corner.
+   Normals are smoothed across rounded corners and kept sharp at real edges. */
+function sweep(outer, holes, len, axis){
+  const at  = axis === 'z' ? (x, n, t) => new THREE.Vector3(x, n, t) : (x, n, t) => new THREE.Vector3(x, t, n);
+  const nrm = axis === 'z' ? (a, b) => new THREE.Vector3(a, b, 0) : (a, b) => new THREE.Vector3(a, 0, b);
+  const capN = axis === 'z' ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
+  const pos = [], nor = [], uv = [];
+  const e1 = new THREE.Vector3(), e2 = new THREE.Vector3();
+  function tri(A, B, C, nA, nB, nC, uA, uB, uC, face){
+    e1.subVectors(B, A); e2.subVectors(C, A);
+    if (e1.cross(e2).dot(face) < 0) { [B, C] = [C, B]; [nB, nC] = [nC, nB]; [uB, uC] = [uC, uB]; }
+    for (const [V, Nn, U] of [[A, nA, uA], [B, nB, uB], [C, nC, uC]]) { pos.push(V.x, V.y, V.z); nor.push(Nn.x, Nn.y, Nn.z); uv.push(U[0], U[1]); }
+  }
+  const contours = [orient(outer, true), ...holes.map(h => orient(h, false))];
+  const S = 600;
+  for (const c of contours) {
+    const N = c.length, en = [], s = [0];
+    for (let i = 0; i < N; i++) {
+      const a = c[i], b = c[(i + 1) % N], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+      en.push([dy / l, -dx / l]); s.push(s[i] + l);
+    }
+    const vn = (i, edge) => {
+      const pv = en[(i - 1 + N) % N], nx = en[i];
+      if (pv[0] * nx[0] + pv[1] * nx[1] > .75) { const x = pv[0] + nx[0], y = pv[1] + nx[1], l = Math.hypot(x, y); return nrm(x / l, y / l); }
+      return nrm(en[edge][0], en[edge][1]);
+    };
+    for (let i = 0; i < N; i++) {
+      const j = (i + 1) % N, a = c[i], b = c[j];
+      const A = at(a[0], a[1], a[1]), B = at(b[0], b[1], b[1]), C = at(b[0], b[1], len), D = at(a[0], a[1], len);
+      const nA = vn(i, i), nB = vn(j, i), face = nrm(en[i][0], en[i][1]);
+      const uA = [a[1] / S, s[i] / S], uB = [b[1] / S, s[i + 1] / S], uC = [len / S, s[i + 1] / S], uD = [len / S, s[i] / S];
+      tri(A, B, C, nA, nB, nB, uA, uB, uC, face);
+      tri(A, C, D, nA, nB, nA, uA, uC, uD, face);
+    }
+  }
+  const capStart = pos.length / 3;
+  const v2 = c => c.map(p => new THREE.Vector2(p[0], p[1]));
+  const faces = THREE.ShapeUtils.triangulateShape(v2(contours[0]), contours.slice(1).map(v2));
+  const all = contours.flat();
+  for (const f of faces) {
+    const V = f.map(k => at(all[k][0], all[k][1], len)), U = f.map(k => [all[k][0] / 300, all[k][1] / 300]);
+    tri(V[0], V[1], V[2], capN, capN, capN, U[0], U[1], U[2], capN);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.addGroup(0, capStart, 0);
+  g.addGroup(capStart, pos.length / 3 - capStart, 1);
+  return g;
+}
+
+const meshes = [], glassMeshes = [];
+const matsOf = mesh => [...new Set(Array.isArray(mesh.material) ? mesh.material : [mesh.material])];
+function addMesh(pid, geo, material, ex, glass = false){
+  const mesh = new THREE.Mesh(geo, material);
+  mesh.castShadow = !glass; mesh.receiveShadow = !glass;
+  for (const m of matsOf(mesh)) m.userData.base = { opacity:m.opacity, transparent:m.transparent, depthWrite:m.depthWrite };
+  mesh.userData = { pid, ex:new THREE.Vector3(...ex), home:new THREE.Vector3(), glass };
+  model.add(mesh); meshes.push(mesh); P[pid].meshes.push(mesh);
+  if (glass) glassMeshes.push(mesh);
+  return mesh;
+}
+function addProfile(pid, outer, holes, matFn, ex){
+  addMesh(pid, sweep(outer, holes, L, 'z'), matFn(), ex);
+  addMesh(pid, sweep(outer, holes, H, 'y'), matFn(), ex);
+}
+/* Glass pane in the y-z plane, cut diagonally as in the photo. g = depth of the edge in the profile. */
+function addGlass(pid, x0, t, g, ex, cut){
+  const s = new THREE.Shape();
+  s.moveTo(g, g); s.lineTo(L, g); s.lineTo(L, H * cut[0]); s.lineTo(L * cut[1], H); s.lineTo(g, H); s.closePath();
+  const geo = new THREE.ExtrudeGeometry(s, { depth:t, bevelEnabled:false });
+  geo.rotateY(-Math.PI / 2); geo.translate(x0 + t, 0, 0);
+  addMesh(pid, geo, M.glass(), ex, true);
+}
+/* Soft moulded part: a 2D outline in the (z, y) plane, extruded along x with rounded edges. */
+function moulded(shape, depth, bevel, x0){
+  let g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled:true, bevelThickness:bevel, bevelSize:bevel, bevelSegments:7, curveSegments:28 });
+  g.rotateY(-Math.PI / 2); g.translate(x0 + depth + bevel, 0, 0);
+  g.deleteAttribute('normal'); g.deleteAttribute('uv');
+  g = mergeVertices(g, 1e-3); g.computeVertexNormals();
+  return g;
+}
+function roundRect(w, h, r){
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  return s;
+}
+
+/* Frame */
+addProfile('karmi', roundPoly([[32,0],[170,0],[170,44],[112,44],[112,62],[98,62],[98,44],[32,44]], [2,3,3,1.5,2,2,1.5,2]), [], M.paint, [0,0,0]);
+addProfile('verhous', roundPoly([[6,-2],[28,-2],[28,1],[9,1],[9,44],[24,44],[24,47],[6,47]], [2,.8,.8,.6,.6,.8,.8,2]), [], M.alu, [-2.4,0,0]);
+addProfile('klipsi', roundPoly([[9,18],[22,18],[22,14],[32,14],[32,30],[22,30],[22,26],[9,26]], .8), [], M.clip, [-1.2,0,0]);
+addProfile('tiivisteet', roundPoly([[112,50],[116,50],[116,58],[112,58]], [.4,1.8,1.8,.4]), [], M.seal, [0,0,0]);
+addProfile('tiivisteet', roundPoly([[62,44],[70,44],[70,48],[62,48]], [.4,.4,1.8,1.8]), [], M.seal, [0,0,0]);
+addProfile('tiivisteet', roundPoly([[158,44],[166,44],[166,46],[158,46]], .9), [], M.seal, [0,0,0]);
+
+/* Outer sash: hollow aluminium profile with a glazing slot, single glass */
+addProfile('ulkopuite',
+  roundPoly([[20,48],[66,48],[66,98],[60,104],[34,104],[34,88],[28,88],[28,104],[20,104]], [1.5,1.5,1,1,.6,.4,.4,.6,1.5]),
+  [roundPoly([[23,51.5],[63,51.5],[63,70],[23,70]], .8), roundPoly([[37.5,73.5],[62.5,73.5],[62.5,97],[37.5,97]], .8)],
+  M.alu, [-1.4,0,0]);
+addGlass('ulkolasi', 29, 4, 90, [-1.4,.9,.9], [.5, .38]);
+{
+  const hole = new THREE.Mesh(new THREE.CircleGeometry(5.5, 40).rotateY(Math.PI / 2), new THREE.MeshStandardMaterial({ color:0x141515, roughness:1 }));
+  hole.material.userData.base = { opacity:1, transparent:false, depthWrite:true };
+  hole.position.set(66.25, 61, L * .45);
+  hole.userData = { pid:'ulkopuite', ex:new THREE.Vector3(-1.4,0,0), home:hole.position.clone() };
+  model.add(hole); meshes.push(hole); P.ulkopuite.meshes.push(hole);
+}
+
+/* Inner sash with the insulated glass unit */
+addProfile('sisapuite', roundPoly([[116,46],[172,46],[172,102],[162,112],[149,112],[149,80],[123,80],[123,104],[116,104]], [2,3,9,9,1.5,.5,.5,1.5,2]), [], M.paint, [1.2,0,0]);
+addGlass('eristyslasi', 124, 4, 82, [1.2,.9,.9], [.42, .5]);
+addGlass('eristyslasi', 144, 4, 82, [1.2,.9,.9], [.42, .5]);
+addProfile('valilista', roundPoly([[128,90],[144,90],[144,97],[128,97]], .6), [[[129,91],[143,91],[143,96],[129,96]]], M.spacer, [1.2,.9,.9]);
+addProfile('valilista', roundPoly([[128,82],[144,82],[144,90],[128,90]], .5), [], M.sealant, [1.2,.9,.9]);
+
+/* Hinges on the stile, between the sashes */
+for (const y of [H * .32, H * .72]) {
+  const m = plastic();
+  const knuckle = new THREE.LatheGeometry([
+    new THREE.Vector2(0,-20), new THREE.Vector2(4.6,-20), new THREE.Vector2(5.8,-19.2), new THREE.Vector2(6,-17.5),
+    new THREE.Vector2(6,16.5), new THREE.Vector2(5.7,18.4), new THREE.Vector2(4.6,19.6), new THREE.Vector2(2.6,20.2), new THREE.Vector2(0,20.3)], 40);
+  addMesh('saranat', knuckle.translate(105, y, 75), m, [.1,0,0]);
+  addMesh('saranat', new RoundedBoxGeometry(12, 30, 11, 4, 2.2).translate(105, y - 2, 66), m, [.1,0,0]);
+  addMesh('saranat', new THREE.CylinderGeometry(2.2, 2.4, 2.2, 6).translate(105, y + 21, 75),
+    new THREE.MeshStandardMaterial({ color:0xb9bdc0, metalness:1, roughness:.35 }), [.1,0,0]);
+}
+
+/* Handle, after the photo: slim stadium rosette with two screws, a round boss that leaves
+   the sash face and bends upward into a flattened grip whose tip leans back toward the window. */
+function leverGeo(curve){
+  const S = 110, R = 32, pos = [], idx = [];
+  const ss = (t, a, b) => THREE.MathUtils.smoothstep(t, a, b), lerp = THREE.MathUtils.lerp;
+  for (let i = 0; i <= S; i++) {
+    const t = i / S, p = curve.getPointAt(t), T = curve.getTangentAt(t);
+    const N = new THREE.Vector3(-T.y, T.x, 0).normalize(), B = new THREE.Vector3(0, 0, 1);
+    const b = lerp(lerp(9.6, 7.8, ss(t, .02, .4)), 9, ss(t, .55, .93));   /* in the bend plane, flaring into the grip */
+    const a = lerp(lerp(9.6, 7.4, ss(t, .02, .4)), 5.4, ss(t, .5, .9));   /* across, along the rail */
+    const e = t > .92 ? Math.sqrt(Math.max(0, 1 - ((t - .92) / .08) ** 2)) : 1;
+    for (let j = 0; j < R; j++) {
+      const th = j / R * Math.PI * 2, c = Math.cos(th), s = Math.sin(th);
+      const q = p.clone().addScaledVector(N, c * b * e).addScaledVector(B, s * a * e);
+      pos.push(q.x, q.y, q.z);
+    }
+  }
+  for (let i = 0; i < S; i++) for (let j = 0; j < R; j++) {
+    const a = i * R + j, b = i * R + (j + 1) % R, c = (i + 1) * R + j, d = (i + 1) * R + (j + 1) % R;
+    idx.push(a, c, b, b, c, d);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+{
+  const m = plastic(), zc = 205, yc = 70;
+  addMesh('painike', moulded(roundRect(66, 24, 11.9), 2.4, 1.5, 172).translate(0, yc, zc), m, [1.2,0,0]);
+  const screw = new THREE.MeshStandardMaterial({ color:0xe6e5e0, roughness:.35, metalness:.35 });
+  const slot = new THREE.MeshStandardMaterial({ color:0x77776f, roughness:.8 });
+  for (const dz of [-23, 23]) {
+    addMesh('painike', new THREE.SphereGeometry(3.3, 28, 10, 0, Math.PI * 2, 0, Math.PI / 2).scale(1, .42, 1).rotateZ(-Math.PI / 2).translate(177.4, yc, zc + dz), screw, [1.2,0,0]);
+    addMesh('painike', new THREE.BoxGeometry(1, .8, 4.4).translate(178.5, yc, zc + dz), slot, [1.2,0,0]);
+    addMesh('painike', new THREE.BoxGeometry(1, 4.4, .8).translate(178.5, yc, zc + dz), slot, [1.2,0,0]);
+  }
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(175, yc, zc), new THREE.Vector3(186, yc - .3, zc), new THREE.Vector3(196, yc - .6, zc),
+    new THREE.Vector3(206, yc + 3, zc), new THREE.Vector3(212, yc + 15, zc), new THREE.Vector3(214, yc + 32, zc),
+    new THREE.Vector3(209, yc + 52, zc)], false, 'centripetal');
+  addMesh('painike', leverGeo(curve), m, [1.2,0,0]);
+}
+
+/* Ambient occlusion sees through glass: hide the panes while it samples depth. */
+const gtaoRender = gtao.render.bind(gtao);
+gtao.render = (...args) => { glassMeshes.forEach(g => g.visible = false); gtaoRender(...args); glassMeshes.forEach(g => g.visible = true); };
+
+/* Interaction state */
+const ACCENT = new THREE.Color(0x2d9a7a), BLACK = new THREE.Color(0);
+let hoverId = null, selId = null;
+function applyState(){
+  for (const p of PARTS) {
+    const hot = p.id === hoverId || p.id === selId;
+    const dim = !!selId && p.id !== selId;
+    for (const mesh of p.meshes) {
+      for (const m of matsOf(mesh)) {
+        const b = m.userData.base;
+        if (m.emissive) { m.emissive.copy(hot ? ACCENT : BLACK); m.emissiveIntensity = hot ? .4 : 0; }
+        const wantT = dim ? true : b.transparent;
+        if (m.transparent !== wantT) { m.transparent = wantT; m.needsUpdate = true; }
+        m.opacity = dim ? Math.min(b.opacity, .1) : b.opacity;
+        m.depthWrite = dim ? false : b.depthWrite;
+      }
+      mesh.castShadow = !dim && !mesh.userData.glass;
+    }
+  }
+  document.querySelectorAll('.part').forEach(b => {
+    b.classList.toggle('hot', b.dataset.id === hoverId);
+    b.setAttribute('aria-pressed', String(b.dataset.id === selId));
+  });
+}
+const infoTag = document.getElementById('infoTag'), infoName = document.getElementById('infoName'), infoDesc = document.getElementById('infoDesc');
+function select(id){
+  selId = id;
+  if (id) { const p = P[id]; infoTag.textContent = p.tag; infoName.textContent = p.name; infoDesc.textContent = p.desc; }
+  else { infoTag.textContent = 'Osa'; infoName.textContent = 'Valitse osa'; infoDesc.textContent = 'Napauta osaa mallissa tai listassa. Valittu osa korostuu ja muut himmenevät.'; }
+  applyState();
+}
+
+/* Parts list */
+const list = document.getElementById('parts');
+for (const p of PARTS) {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.type = 'button'; b.className = 'part'; b.dataset.id = p.id; b.setAttribute('aria-pressed', 'false');
+  b.innerHTML = `<span class="sw" style="--sw:${p.sw}"></span><span>${p.name}</span><span class="tg">${p.tag}</span>`;
+  b.addEventListener('click', () => select(selId === p.id ? null : p.id));
+  b.addEventListener('mouseenter', () => { hoverId = p.id; applyState(); });
+  b.addEventListener('mouseleave', () => { hoverId = null; applyState(); });
+  li.appendChild(b); list.appendChild(li);
+}
+
+/* Exterior colour */
+const colorsEl = document.getElementById('colors'), cmpImg = document.getElementById('cmpImg');
+function setColor(c){
+  aluHex = c.hex;
+  aluSide.forEach(m => m.color.set(c.hex));
+  paintSide.forEach(m => m.color.set(c.hex));
+  /* White windows are painted on the cut too; coloured samples show bare pine there, as in the photos. */
+  endCaps.forEach(m => { m.map = m.bumpMap = c.id === '01' ? endGrain : pineGrain; m.bumpScale = c.id === '01' ? 1.1 : .7; });
+  document.documentElement.style.setProperty('--alu', c.hex);
+  cmpImg.src = c.img; cmpImg.alt = `Valokuva ikkunasta, ulkopinta ${c.name.toLowerCase()} ${c.code}`;
+  colorsEl.querySelectorAll('.color').forEach(b => {
+    const on = b.dataset.id === c.id; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1;
+  });
+  try { localStorage.setItem('nurkka-vari', c.id); } catch (e) {}
+}
+for (const c of COLORS) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'color'; b.dataset.id = c.id; b.setAttribute('role', 'radio');
+  b.innerHTML = `<span class="chip" style="--c:${c.hex}"></span><span class="cn">${c.name}</span><span class="cc">${c.code}</span>`;
+  b.addEventListener('click', () => setColor(c));
+  b.addEventListener('keydown', e => {
+    const k = { ArrowRight:1, ArrowDown:1, ArrowLeft:-1, ArrowUp:-1 }[e.key]; if (!k) return;
+    e.preventDefault(); const i = (COLORS.indexOf(c) + k + COLORS.length) % COLORS.length;
+    setColor(COLORS[i]); colorsEl.querySelector(`[data-id="${COLORS[i].id}"]`).focus();
+  });
+  colorsEl.appendChild(b);
+}
+let saved = null; try { saved = localStorage.getItem('nurkka-vari'); } catch (e) {}
+setColor(COLORS.find(c => c.id === saved) || COLORS[0]);
+
+/* Picking: the first opaque part wins over glass in front of it. */
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+function pick(e){
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hits = ray.intersectObjects(meshes, false).filter(h => !selId || h.object.userData.pid === selId);
+  const solid = hits.find(h => !h.object.userData.glass);
+  return (solid || hits[0])?.object.userData.pid ?? null;
+}
+const tip = document.getElementById('tip');
+function showTip(id, e){
+  if (!id) { tip.hidden = true; return; }
+  const r = stage.getBoundingClientRect();
+  tip.textContent = P[id].name; tip.hidden = false;
+  tip.style.transform = `translate(${e.clientX - r.left + 14}px, ${e.clientY - r.top - 30}px)`;
+}
+const cv = renderer.domElement;
+let down = null;
+cv.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+cv.addEventListener('pointerup', e => {
+  if (!down) return;
+  const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]); down = null;
+  if (moved > 5) return;
+  const id = pick(e);
+  select(id === selId ? null : id);
+});
+cv.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || e.buttons) { tip.hidden = true; return; }
+  const id = pick(e);
+  if (id !== hoverId) { hoverId = id; applyState(); }
+  showTip(id, e);
+});
+cv.addEventListener('pointerleave', () => { hoverId = null; tip.hidden = true; applyState(); });
+
+/* Explode */
+const ex = document.getElementById('explode'), exVal = document.getElementById('explodeVal');
+function setExplode(v){
+  for (const mesh of meshes) mesh.position.copy(mesh.userData.ex).multiplyScalar(v * 48).add(mesh.userData.home);
+  exVal.textContent = Math.round(v * 100) + ' %';
+}
+ex.addEventListener('input', () => setExplode(ex.value / 100));
+
+/* View controls */
+const rotBtn = document.getElementById('rotBtn'), homeBtn = document.getElementById('homeBtn');
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setAuto(on){ controls.autoRotate = on; rotBtn.setAttribute('aria-pressed', String(on)); }
+setAuto(!reduce);
+rotBtn.addEventListener('click', () => setAuto(!controls.autoRotate));
+controls.addEventListener('start', () => { if (controls.autoRotate) setAuto(false); });
+function home(){
+  const a = stage.clientWidth / Math.max(1, stage.clientHeight);
+  const s = a < .9 ? 1.5 : a < 1.25 ? 1.18 : 1;
+  controls.target.set(0, 170, 0);
+  camera.position.set(-170 * s, 170 + 450 * s, 920 * s);
+  controls.update();
+}
+homeBtn.addEventListener('click', home);
+
+function resize(){
+  const w = stage.clientWidth, h = Math.max(1, stage.clientHeight);
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+resize(); home();
+
+renderer.setAnimationLoop(() => { controls.update(); composer.render(); });
+</script>
+
+</body></html><script>addEventListener("message",function(e){if(!e.data||e.data.svgp==null)return;var x=document.getElementById("explode");if(!x)return;var p=Math.min(1,Math.max(0,(e.data.svgp-.1)/.8));x.value=Math.round(p*100);x.dispatchEvent(new Event("input"))});</script>

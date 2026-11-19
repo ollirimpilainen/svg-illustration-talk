@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drawing with numbers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#000e39;--blue:#003cff;--g1:#eef0f5;--g2:#b9c6d4;--g3:#5a7796;--g4:#2f4b66;--white:#fff;
+--green:#00a06e;--teal:#00a3b7;--coral:#f1615e;--violet:#9185db;--f:'Outfit',arial,sans-serif;--r:8px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--white);color:var(--navy);font:400 20px/1.6 var(--f);-webkit-font-smoothing:antialiased}
+.w{max-width:1200px;margin:0 auto;padding:0 48px}
+h1,h2,h3{font-weight:500;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(48px,7.4vw,104px);line-height:1}
+h2{font-size:clamp(36px,4.4vw,62px);line-height:1.08}
+h3{font-size:24px;line-height:1.3}
+p{margin:0 0 18px;max-width:62ch}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-weight:500;font-size:15px;letter-spacing:.04em;color:var(--blue);margin-bottom:28px}
+.eyebrow:before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.lead{font-size:clamp(20px,1.8vw,26px);line-height:1.5;color:var(--g4);max-width:40ch}
+.dot{color:var(--blue)}
+section{padding:clamp(96px,12vw,168px) 0}
+.tint{background:var(--g1)}
+.dark{background:var(--navy);color:var(--white)}
+.dark .lead{color:var(--g2)}.dark .eyebrow{color:#7d9bff}
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.1,1),transform .8s cubic-bezier(.2,.7,.1,1)}
+.rv.in{opacity:1;transform:none}
+
+/* hero */
+.hero{min-height:100vh;display:grid;align-items:center;padding:96px 0;position:relative;overflow:hidden}
+.hero .w{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero svg{width:100%;height:auto;overflow:visible}
+.draw{fill:none;stroke:#7d9bff;stroke-width:1.6;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 2.4s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.fillin{opacity:0;animation:fade 1.2s 2s forwards}@keyframes fade{to{opacity:1}}
+.meta{display:flex;gap:32px;margin-top:48px;font-size:16px;color:var(--g2)}
+.meta b{display:block;color:var(--white);font-weight:500;font-size:18px}
+.scroll{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);font-size:14px;color:var(--g2);letter-spacing:.06em}
+
+/* vertailu */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:64px}
+.col{border-radius:16px;padding:40px}
+.col.a{background:var(--white);border:1px solid var(--g2)}
+.col.b{background:var(--navy);color:var(--white)}
+.col h3{margin-bottom:28px}
+.col ul{list-style:none;padding:0;margin:0}
+.col li{padding:16px 0;border-top:1px solid rgba(128,148,180,.3);font-size:18px;display:flex;gap:14px}
+.col li i{font-style:normal;flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;margin-top:3px}
+.col.a li i{background:var(--g1);color:var(--g3)}
+.col.b li i{background:var(--blue);color:var(--white)}
+
+/* iso statement */
+.big{font-weight:500;font-size:clamp(48px,7.4vw,112px);line-height:1;letter-spacing:-.02em;max-width:14ch}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);margin-top:80px;position:relative}
+.flow:before{content:"";position:absolute;left:0;right:0;top:11px;height:2px;background:var(--g2)}
+.flow .fill{position:absolute;left:0;top:11px;height:2px;background:var(--blue);width:0;transition:width 2s cubic-bezier(.65,0,.35,1)}
+.flow.in .fill{width:100%}
+.flow div.s{position:relative;padding:48px 28px 0 0}
+.flow div.s:before{content:"";position:absolute;top:0;left:0;width:24px;height:24px;border-radius:50%;background:var(--white);border:2px solid var(--blue);z-index:1}
+.flow div.s:last-child:before{background:var(--blue)}
+.flow b{display:block;font-weight:500;font-size:22px;margin-bottom:8px}
+.flow span{color:var(--g4);font-size:17px}
+
+/* playground */
+.play{display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;margin-top:72px}
+.code{background:var(--navy);color:#cfd8f5;border-radius:16px;padding:32px;font:400 16px/1.9 ui-monospace,Menlo,monospace}
+.code .k{color:#7d9bff}.code .n{color:#7ee0c0}
+.ctl{margin-top:28px}
+.ctl label{display:flex;justify-content:space-between;font-size:16px;color:var(--g4);margin-bottom:6px}
+.ctl label b{color:var(--navy);font-weight:500}
+.ctl input{width:100%;accent-color:var(--blue);margin:0 0 22px}
+.stage{background:var(--g1);border-radius:16px;aspect-ratio:4/3;display:grid;place-items:center}
+.stage svg{width:92%;height:auto}
+
+/* cases */
+.case{display:grid;grid-template-columns:340px 1fr;gap:64px;align-items:start}
+.case .side{position:sticky;top:48px}
+.num{font-size:15px;color:var(--g3);margin-bottom:20px;font-weight:500}
+.num em{font-style:normal;color:var(--blue)}
+.case h2{font-size:clamp(32px,3.4vw,46px);margin-bottom:24px}
+.case p{font-size:18px;color:var(--g4)}
+.learn{margin-top:32px;padding:24px;border-radius:12px;background:var(--g1)}
+.tint .learn{background:var(--white)}
+.learn small{display:block;font-size:13px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.learn p{margin:0;color:var(--navy);font-size:19px;font-weight:500;line-height:1.4}
+.frame{border-radius:16px;overflow:hidden;background:var(--white);box-shadow:0 1px 2px rgba(0,14,57,.06),0 24px 64px -24px rgba(0,14,57,.28)}
+.frame .bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--g1);font-size:14px;color:var(--g3)}
+.frame .bar i{width:10px;height:10px;border-radius:50%;background:var(--g2)}
+.frame .bar a{margin-left:auto;color:var(--blue);text-decoration:none;font-weight:500}
+.frame iframe{display:block;width:100%;height:78vh;min-height:560px;border:0;background:var(--white)}
+.pills{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.pills button{font:500 15px var(--f);border:1px solid var(--g2);background:transparent;color:var(--navy);border-radius:9999px;padding:10px 20px;cursor:pointer;transition:all .2s}
+.pills button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:var(--white)}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:64px}
+.sk{border-radius:16px;padding:36px;background:var(--white);position:relative;overflow:hidden}
+.sk .tag{display:inline-block;font-size:14px;font-weight:500;padding:6px 14px;border-radius:9999px;margin-bottom:20px;color:var(--white)}
+.sk h3{margin-bottom:10px}.sk p{color:var(--g4);font-size:18px;margin:0}
+.sk.main{grid-column:span 2;background:var(--navy);color:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.sk.main p{color:var(--g2)}
+
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:20px}.gal figure{margin:0;background:var(--white);border-radius:16px;padding:24px;box-shadow:0 1px 2px rgba(0,14,57,.06),0 24px 64px -24px rgba(0,14,57,.22)}.gal img{display:block;width:100%;height:260px;object-fit:contain}.gal figcaption{font-size:15px;color:var(--g3);margin-top:12px}
+.sk{background:var(--g1)!important}.sk.main{background:var(--navy)!important}
+/* limits */
+.lim{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-top:64px}
+.lim div{border-top:2px solid var(--navy);padding-top:24px}
+.lim b{display:block;font-weight:500;font-size:22px;margin-bottom:10px}
+.lim span{color:var(--g4);font-size:17px}
+
+/* end */
+.prompt{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:40px;font-size:22px;line-height:1.7;margin-top:56px;max-width:880px}
+.prompt mark{background:none;color:#7d9bff}
+.end{font-weight:500;font-size:clamp(56px,9vw,140px);line-height:1;margin-top:120px;letter-spacing:-.02em}
+
+nav.dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:9;mix-blend-mode:difference}
+nav.dots a{width:8px;height:8px;border-radius:50%;background:#8a8a8a;transition:transform .3s,background .3s}
+nav.dots a.on{background:#fff;transform:scale(1.5)}
+
+@media(max-width:960px){.w{padding:0 20px}.hero .w,.vs,.play,.case,.skills,.sk.main{grid-template-columns:1fr}.sk.main{grid-column:auto}
+.flow,.lim{grid-template-columns:1fr 1fr;gap:32px}.flow:before,.flow .fill{display:none}.case .side{position:static}nav.dots{display:none}.frame iframe{height:560px}}
+
+#prog{position:fixed;left:0;top:0;height:3px;width:0;background:var(--blue);z-index:20;box-shadow:0 0 12px var(--blue)}
+.hero{isolation:isolate}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(rgba(125,155,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(125,155,255,.07) 1px,transparent 1px);background-size:64px 64px;-webkit-mask:radial-gradient(ellipse 70% 70% at 60% 45%,#000 30%,transparent 80%);mask:radial-gradient(ellipse 70% 70% at 60% 45%,#000 30%,transparent 80%)}
+.hero:after{content:"";position:absolute;width:900px;height:900px;left:var(--mx,65%);top:var(--my,45%);transform:translate(-50%,-50%);z-index:-1;background:radial-gradient(circle,rgba(0,60,255,.42),transparent 62%);filter:blur(30px);transition:left .6s cubic-bezier(.2,.7,.1,1),top .6s cubic-bezier(.2,.7,.1,1);pointer-events:none}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wm{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.08em;margin-bottom:-.08em}
+.wd{display:inline-block;transform:translateY(105%);animation:up 1s cubic-bezier(.2,.7,.1,1) forwards}
+@keyframes up{to{transform:none}}
+.hero .lead,.hero .meta,.hero .eyebrow{opacity:0;animation:fade 1s 1s forwards}
+.hero h1{font-size:clamp(56px,8.2vw,124px);letter-spacing:-.03em}
+.meta b{font-size:44px;font-weight:300;line-height:1;margin-bottom:6px}
+.wall{background:var(--navy);color:var(--white);padding-bottom:120px;overflow:hidden}
+.wall .eyebrow{color:#7d9bff}
+.mq{overflow:hidden;margin-top:56px;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq+.mq{margin-top:20px}
+.track{display:flex;gap:20px;width:max-content;animation:mq 70s linear infinite}
+.mq.rev .track{animation-direction:reverse;animation-duration:85s}
+.mq:hover .track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.card{width:300px;height:230px;flex:none;background:#fff;border-radius:18px;padding:22px;display:grid;place-items:center;transition:transform .4s cubic-bezier(.2,.7,.1,1)}
+.card:hover{transform:translateY(-6px) scale(1.03)}
+.card img{max-width:100%;max-height:100%;object-fit:contain}
+.feat{background:linear-gradient(180deg,var(--navy) 0%,#061a5e 100%);color:var(--white)}
+.feat .lead{color:var(--g2)}.feat .eyebrow{color:#7d9bff}
+.zoom{margin:72px 0 0;background:#fff;border-radius:24px;padding:clamp(20px,4vw,56px);transform:scale(.88) translateY(40px);opacity:.4;transition:transform 1.4s cubic-bezier(.2,.7,.1,1),opacity 1.4s;box-shadow:0 60px 120px -40px rgba(0,60,255,.55)}
+.zoom.in{transform:none;opacity:1}
+.zoom img{display:block;width:100%;height:auto}
+#kokeile{background:var(--navy);color:var(--white)}
+#kokeile .lead{color:var(--g2)}#kokeile .eyebrow{color:#7d9bff}
+#kokeile .ctl label{color:var(--g2)}#kokeile .ctl label b{color:var(--white)}
+#kokeile .code{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12)}
+#kokeile .stage{background:radial-gradient(circle at 50% 40%,#132a7a,#06113f);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.go{margin-top:20px;font:500 17px var(--f);background:var(--blue);color:#fff;border:0;border-radius:9999px;padding:16px 28px;cursor:pointer;box-shadow:0 12px 32px -8px rgba(0,60,255,.7);transition:transform .2s,box-shadow .2s}
+.go:hover{transform:translateY(-2px);box-shadow:0 18px 40px -8px rgba(0,60,255,.9)}
+.series{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:40px}
+.series figure{margin:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s cubic-bezier(.2,.7,.1,1)}
+.series figure.on{opacity:1;transform:none}
+.series svg{width:100%;height:auto;display:block}
+.series figcaption{font-size:14px;color:var(--g2);text-align:center;margin-top:4px}
+
+@media(max-width:960px){.series{grid-template-columns:repeat(3,1fr)}.card{width:220px;height:170px}}
+@media(prefers-reduced-motion:reduce){.track{animation:none}.wd{transform:none;animation:none}}
+
+/* VAALEA TEEMA */
+:root{--g1:#f2f3f6}
+.hero{background:#fff;color:var(--navy)}
+.hero .lead{color:var(--g4)}.hero .eyebrow{color:var(--blue)}
+.hero:before{background-image:linear-gradient(rgba(0,14,57,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,14,57,.06) 1px,transparent 1px)}
+.hero:after{background:radial-gradient(circle,rgba(0,60,255,.16),transparent 60%)}
+.draw{stroke:var(--blue);stroke-width:1.8}
+.meta{color:var(--g3)}.meta b{color:var(--navy)}
+.scroll{color:var(--g3)}
+.wall{background:var(--g1);color:var(--navy)}.wall .eyebrow{color:var(--blue)}
+.card{box-shadow:0 1px 2px rgba(0,14,57,.05),0 18px 40px -20px rgba(0,14,57,.25)}
+.feat{background:#fff;color:var(--navy)}.feat .lead{color:var(--g4)}.feat .eyebrow{color:var(--blue)}
+.zoom{background:#fff;border:1px solid #e6e8ee;box-shadow:0 50px 100px -40px rgba(0,14,57,.3)}
+#kokeile{background:var(--g1);color:var(--navy)}
+#kokeile .lead{color:var(--g4)}#kokeile .eyebrow{color:var(--blue)}
+#kokeile .ctl label{color:var(--g4)}#kokeile .ctl label b{color:var(--navy)}
+#kokeile .code{background:#fff;border:1px solid #e3e6ec;color:var(--navy)}
+#kokeile .code .k{color:var(--blue)}#kokeile .code .n{color:#00865c}
+#kokeile .stage{background:radial-gradient(circle at 50% 40%,#fff,#eceef3);box-shadow:inset 0 0 0 1px #e3e6ec}
+.ctl input{accent-color:var(--blue)}
+.series figure{background:#fff;border:1px solid #e3e6ec}
+.series figcaption{color:var(--g3)}
+#kokeile-huomenna .prompt{background:#fff;border:1px solid #e3e6ec;color:var(--navy)}
+.prompt mark{color:var(--blue)}
+.end{color:var(--navy);background:none}
+.col.b{background:#fff;color:var(--navy);border:2px solid var(--blue);box-shadow:0 30px 60px -30px rgba(0,60,255,.35)}
+.col.a{background:var(--g1);border:0}
+.col li{border-top-color:#e3e6ec}
+.sk.main{background:#fff!important;color:var(--navy);border:2px solid var(--blue)}
+.sk.main p{color:var(--g4)}
+
+/* CASET: sama taso kuin alkuosa */
+.case{display:block}
+.case .side{position:static;display:grid;grid-template-columns:1.15fr 1fr;column-gap:80px;align-items:end;margin-bottom:56px}
+.case .side>.num{grid-column:1;grid-row:1;margin:0}
+.case .side>h2{grid-column:1;grid-row:2;font-size:clamp(40px,5.2vw,76px);line-height:1.02;letter-spacing:-.02em;margin:0}
+.case .side>p{grid-column:2;grid-row:1/3;align-self:end;font-size:21px;line-height:1.55;margin:0}
+.case .side>.learn{grid-column:1/-1;grid-row:3;margin:40px 0 0;padding:0 0 0 28px;background:none!important;border-left:3px solid var(--blue);border-radius:0}
+.learn small{font-size:13px}
+.learn p{font-size:clamp(22px,2.2vw,30px);font-weight:400;line-height:1.35;max-width:36ch}
+.num{display:flex;align-items:baseline;gap:10px;font-size:16px;color:var(--g3)}
+.num em{font-size:clamp(88px,10vw,160px);font-weight:200;line-height:.85;letter-spacing:-.04em;color:var(--blue)}
+.frame{border-radius:22px;box-shadow:0 1px 2px rgba(0,14,57,.05),0 60px 120px -50px rgba(0,14,57,.4)}
+.frame .bar{background:#f7f8fa;border-bottom:1px solid #eceef2}
+.frame iframe{height:84vh}
+.pills{margin-bottom:20px}
+.gal{grid-template-columns:repeat(4,1fr)}
+.gal img{height:300px}
+
+/* SKILLIT JA RAJAT */
+.skills{gap:20px}
+.sk{padding:44px;border-radius:22px;transition:transform .4s cubic-bezier(.2,.7,.1,1),box-shadow .4s}
+.sk:hover{transform:translateY(-6px);box-shadow:0 40px 80px -40px rgba(0,14,57,.35)}
+.sk h3{font-size:32px;font-weight:500}
+.lim{gap:0;border-top:1px solid #e3e6ec;grid-template-columns:1fr}
+.lim div{display:grid;grid-template-columns:120px 1fr 1.4fr;gap:32px;align-items:baseline;border-top:0;border-bottom:1px solid #e3e6ec;padding:36px 0;counter-increment:lim}
+.lim div:before{content:"0" counter(lim);font-size:56px;font-weight:200;color:var(--blue);line-height:1}
+.lim b{font-size:clamp(26px,2.6vw,36px);margin:0}
+.lim span{font-size:20px}
+.lim{counter-reset:lim}
+@media(max-width:960px){.case .side{grid-template-columns:1fr}.case .side>p{grid-column:1;grid-row:auto}.case .side>*{grid-row:auto!important}.gal{grid-template-columns:1fr 1fr}.lim div{grid-template-columns:1fr}}
+.hero-line{position:relative;width:118%;margin-right:-18%;aspect-ratio:16/10}.hero-line iframe{position:absolute;left:0;top:0;width:1440px;height:900px;transform-origin:0 0;border:0;pointer-events:none;background:transparent}@media(max-width:960px){.hero-line{width:100%;margin:0}}.scrub{height:calc(var(--len)*1vh);width:100vw;margin-left:calc(50% - 50vw);margin-top:24px}
+.scrub .pin{position:sticky;top:0;height:100vh;overflow:hidden}
+.scrub iframe{display:block;width:100%;height:100%;border:0;pointer-events:none;background:transparent}
+.tint .scrub iframe{background:transparent}.card{width:500px;height:350px;padding:28px;border-radius:22px}.card img{width:100%;height:100%;object-fit:contain}.track{animation-duration:90s}.mq.rev .track{animation-duration:110s}@media(max-width:960px){.card{width:300px;height:220px}}.hero:before,.hero:after{display:none!important}.hero{background:radial-gradient(55% 65% at 78% 28%,rgba(0,60,255,.22) 0%,rgba(0,60,255,0) 70%),radial-gradient(45% 55% at 95% 95%,rgba(90,119,150,.32) 0%,rgba(90,119,150,0) 70%),radial-gradient(40% 50% at 10% 100%,rgba(0,60,255,.08) 0%,rgba(0,60,255,0) 70%),linear-gradient(165deg,#ffffff 0%,#f1f4fa 50%,#dfe6f1 100%)!important}.case .side>.learn{margin-top:32px}.card{width:340px}.card.w{width:620px}@media(max-width:960px){.card{width:220px}.card.w{width:380px}}.hero .w>div:first-child{position:relative;z-index:1}.hero-line{width:128%!important;margin:0 -18% 0 -10%!important;z-index:2}.hero .w{grid-template-columns:1fr 1fr!important;gap:40px!important}.hero h1{font-size:clamp(52px,6.6vw,104px)!important;line-height:.98}.hero{background:linear-gradient(165deg,#ffffff 0%,#f1f4fa 50%,#dfe6f1 100%)!important;overflow:hidden}.hero-bg{position:absolute;inset:-20%;z-index:-1;pointer-events:none;background:radial-gradient(55% 65% at 78% 28%,rgba(0,60,255,.22) 0%,rgba(0,60,255,0) 70%),radial-gradient(45% 55% at 95% 95%,rgba(90,119,150,.32) 0%,rgba(90,119,150,0) 70%),radial-gradient(40% 50% at 10% 100%,rgba(0,60,255,.08) 0%,rgba(0,60,255,0) 70%);animation:hgm 24s ease-in-out infinite alternate;will-change:transform}@keyframes hgm{from{transform:translate3d(-5%,-4%,0) scale(1)}to{transform:translate3d(5%,5%,0) scale(1.1)}}@keyframes hg{0%{background-position:0% 0%}50%{background-position:60% 40%}100%{background-position:100% 100%}}@media(prefers-reduced-motion:reduce){.hero-bg{animation:none}}#kokeile .lead{max-width:48ch}.play{margin-top:56px!important;align-items:stretch!important;grid-template-columns:400px 1fr!important;gap:40px!important}.play>div:first-child{display:flex;flex-direction:column}.code{padding:24px 28px!important}.ctl{margin-top:28px}.ctl input{margin:0 0 18px}.go{margin-top:8px!important;align-self:flex-start}.play>div:last-child{display:flex}.stage{aspect-ratio:auto!important;flex:1;min-height:440px}
+.embed{width:100vw;margin-left:calc(50% - 50vw);margin-top:24px}.embed iframe{display:block;width:100%;height:min(980px,100vh);border:0;background:transparent}
+.case .side{display:grid!important;grid-template-columns:minmax(0,7fr) minmax(0,5fr)!important;column-gap:72px!important;row-gap:0!important;align-items:start!important;margin-bottom:48px!important}
+.case .side>.num{grid-column:1!important;grid-row:1!important;display:block!important;font-size:15px!important;font-weight:500;color:var(--g3);margin:0 0 20px!important;letter-spacing:.04em}
+.case .side>.num em{font-size:15px!important;font-weight:500!important;line-height:1!important;letter-spacing:.04em!important;color:var(--blue)!important}
+.case .side>h2{grid-column:1!important;grid-row:2!important;font-size:clamp(36px,4vw,60px)!important;line-height:1.05!important;max-width:16ch;margin:0!important}
+.case .side>p{grid-column:2!important;grid-row:2!important;align-self:end!important;font-size:19px!important;line-height:1.55!important;color:var(--g4);margin:0 0 6px!important;max-width:40ch}
+.case .side>.learn{grid-column:2!important;grid-row:3!important;margin:24px 0 0!important;padding:0 0 0 20px!important;border-left:2px solid var(--blue)!important}
+.case .side>.learn p{font-size:19px!important;line-height:1.45!important;font-weight:500!important;color:var(--navy)!important;max-width:40ch}
+@media(max-width:960px){.case .side{grid-template-columns:1fr!important}.case .side>*{grid-column:1!important;grid-row:auto!important}}
+.end{font-size:clamp(44px,6vw,96px)!important;line-height:1.02!important;letter-spacing:-.025em;margin-top:140px!important;margin-bottom:40px}
+/* POLISH: rytmi, tasaus, lopetus */
+h1,h2,h3,.big,.end{text-wrap:balance}
+p,li,.lim span,.flow span{text-wrap:pretty}
+/* taustojen vuorottelu: ei kahta samaa harmaata perakkain */
+#oivallus{background:#fff}
+#kokeile{background:#fff!important;padding-top:24px}
+#kokeile .stage{background:radial-gradient(circle at 50% 40%,#fff,#eef0f4)!important}
+#kokeile .code{background:#f7f8fa!important}
+/* vertailu: nakyvat ?-merkit */
+.col.a li i{background:#fff;color:var(--g3)}
+/* caset: otsikko vasen, teksti oikealla ylalaidasta tasattuna */
+.case .side>p{align-self:start!important;margin:14px 0 0!important}
+.case .side>.learn{border-left:0!important;border-top:1px solid #d6dce6;padding:20px 0 0!important;margin:28px 0 0!important}
+.tint .case .side>.learn{border-top-color:#d3d9e3}
+#oivallus .lead{max-width:46ch}
+.flow span{display:block;line-height:1.5}
+/* lopetus: kirjanpaatos heron gradientilla */
+#kokeile-huomenna{background:linear-gradient(195deg,#ffffff 0%,#f1f4fa 45%,#dfe6f1 100%);padding:clamp(120px,14vw,200px) 0 clamp(140px,16vw,240px)}
+#kokeile-huomenna .prompt{margin-top:48px;max-width:none;padding:44px 48px;font-size:24px;line-height:1.65;box-shadow:0 1px 2px rgba(0,14,57,.04),0 40px 80px -48px rgba(0,14,57,.35)}
+#kokeile-huomenna .end{font-size:clamp(48px,6.4vw,96px)!important;line-height:.98!important;letter-spacing:-.03em;margin-top:clamp(120px,14vw,200px)!important;margin-bottom:0;max-width:none}
+</style></head><body>
+<div id="prog"></div>
+
+<header class="hero" id="alku"><div class="hero-bg"></div><div class="w">
+<div>
+
+<h1>Drawing with<br>numbers</h1>
+<p class="lead" style="margin-top:32px">SVG illustration with Claude: what five<br>client projects taught me.</p>
+<div class="meta"><div><b>5</b>clients</div><div><b>300+</b>SVG images</div><div><b>0</b>drawn by hand</div></div>
+</div>
+<div class="hero-line"><iframe src="demot/finmatec-hero.html" title="Finmatecin linjasto" tabindex="-1" scrolling="no"></iframe></div><svg id="heroArt" style="display:none"></svg>
+</div></header>
+
+<section id="miksi"><div class="w">
+<div class="rv">
+<h2>An image generator guesses.<br>SVG knows.</h2>
+<p class="lead" style="margin-top:28px">When a client has no photos, the first instinct is to generate one. It looks great until someone measures it.</p></div>
+<div class="vs">
+<div class="col a rv"><h3>Image generator</h3><ul>
+<li><i>?</i>Dimensions and part counts are guesses</li>
+<li><i>?</i>Every change is a new roll of the dice</li>
+<li><i>?</i>The tenth image in a series never matches the first</li>
+<li><i>?</i>A heavy bitmap that does not scale</li></ul></div>
+<div class="col b rv"><h3>SVG as code</h3><ul>
+<li><i>✓</i>Drawn from real dimensions</li>
+<li><i>✓</i>A change is one number, not a new image</li>
+<li><i>✓</i>Same light, line and colour across the series</li>
+<li><i>✓</i>Light, sharp and ready to animate</li></ul></div>
+</div>
+</div></section>
+
+<section class="wall" id="seina"><div class="w rv"><h2>None of these<br>were drawn by hand.</h2></div>
+<div class="mq"><div class="track"><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/datakeskus/uusi/dk-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/BCE/proto/kuvat/tuotekuva-kp-1000.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/Luotokoti/assets/aksonometria-3mh.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/energia/en-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/BCE/analytiikka/docs/kuvat/palkkikuva-rivi.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/kaupungit/kv-6.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/datakeskus/uusi/dk-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/BCE/proto/kuvat/tuotekuva-kp-1000.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/Luotokoti/assets/aksonometria-3mh.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/energia/en-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/BCE/analytiikka/docs/kuvat/palkkikuva-rivi.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/kaupungit/kv-6.svg" alt=""></div></div></div><div class="mq rev"><div class="track"><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/teollisuus/te-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/Luotokoti/assets/talokuva.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/menetelmat/me-runko.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/palvelut/pi-rata.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/datakeskus/tumma/dk-1.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/palvelukartta/vinjetit/palvelukartta-patukka-8-tasainen-lapinakyva.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/toimialat/teollisuus/te-animaatio.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/Luotokoti/assets/talokuva.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/menetelmat/me-runko.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/palvelut/pi-rata.svg" alt=""></div><div class="card "><img loading="lazy" src="assets/GRK/wireframet/kuvat/datakeskus/tumma/dk-1.svg" alt=""></div><div class="card w"><img loading="lazy" src="assets/GRK/wireframet/kuvat/palvelukartta/vinjetit/palvelukartta-patukka-8-tasainen-lapinakyva.svg" alt=""></div></div></div></div></div></section>
+<section class="tint" id="oivallus"><div class="w">
+<div class="rv">
+<p class="big">Don’t ask for an image. Ask for a drawing machine.</p>
+<p class="lead" style="margin-top:36px">One image is easy for Claude. The trouble starts with a series: every image comes out slightly different. So I ask Claude to write a program that draws every image by the same rules.</p></div>
+<div class="flow rv" id="flow"><div class="fill"></div>
+<div class="s"><b>Dimensions</b><span>A product table, a drawing or a brochure.</span></div>
+<div class="s"><b>Rules</b><span>Angle, light, colour and line, decided once.</span></div>
+<div class="s"><b>Review</b><span>Claude looks at the result and fixes it before I see it.</span></div>
+<div class="s"><b>Series</b><span>A new product is a new row of data, not a new drawing.</span></div>
+</div>
+</div></section>
+
+<section id="kokeile"><div class="w">
+<div class="rv">
+<h2>This is what a drawing machine looks like</h2>
+<p class="lead" style="margin-top:24px">A beam is three numbers. Change a number and the image redraws. That is how BCE’s whole product catalogue was made.</p></div>
+<div class="play rv">
+<div><div class="code"><span class="k">beam</span>({<br>&nbsp;&nbsp;width: <span class="n" id="cw">90</span>,<br>&nbsp;&nbsp;height: <span class="n" id="ch">270</span>,<br>&nbsp;&nbsp;length: <span class="n" id="cl">900</span><br>})</div>
+<div class="ctl">
+<label>Width <b><span id="vw">90</span> mm</b></label><input type="range" id="iw" min="42" max="140" step="1" value="90">
+<label>Height <b><span id="vh">270</span> mm</b></label><input type="range" id="ih" min="90" max="405" step="45" value="270">
+<label>Length <b><span id="vl">900</span> mm</b></label><input type="range" id="il" min="300" max="1200" step="50" value="900">
+<button class="go" id="go">Draw the whole series →</button></div></div>
+<div><div class="stage"><svg id="beam" viewBox="0 0 640 480" aria-label="Glulam beam drawn from the chosen dimensions"></svg></div></div>
+</div>
+<div class="series" id="series"></div>
+</div></section>
+
+<section class="tint" id="grk"><div class="w case">
+<div class="side rv"><div class="num"><em>01</em> / 05</div><h2>GRK: five sites, one visual language</h2>
+<p>A data centre’s whole infrastructure, step by step. The image builds as you scroll.</p>
+<div class="learn"><p>Lock the rules first, and the fifth site is as easy as the first.</p></div></div>
+<div class="embed"><iframe data-src="demot/grk-palvelukartta.html" title="GRK palvelukartta"></iframe></div>
+<div class="scrub" style="--len:500"><div class="pin"><iframe data-src="demot/grk-scrolly.html" tabindex="-1" scrolling="no" title="demo"></iframe></div></div>
+</div></section>
+
+<section id="bce"><div class="w case">
+<div class="side rv"><div class="num"><em>02</em> / 05</div><h2>BCE: a deck that opens as you scroll</h2>
+<p>Scroll, and the deck comes apart layer by layer: boards, beams, piers and base. One image shows what you buy and how it goes together.</p>
+<div class="learn"><p>One drawing machine, dozens of products. This is where the method pays for itself.</p></div></div>
+<div class="scrub" style="--len:260"><div class="pin"><iframe data-src="demot/bce-terassi.html" tabindex="-1" scrolling="no" title="demo"></iframe></div></div>
+</div></section>
+
+<section class="tint" id="finmatec"><div class="w case">
+<div class="side rv"><div class="num"><em>03</em> / 05</div><h2>Finmatec: the whole line, one station at a time</h2>
+<p>A pet food line from reception to plate freezer. As you scroll, the camera moves from station to station and opens up the machines behind it.</p>
+<div class="learn"><p>The strength of SVG is not the surface but the structure. Parts have names, and they can move.</p></div></div>
+<div class="scrub" style="--len:600"><div class="pin"><iframe data-src="demot/finmatec-linjasto.html" tabindex="-1" scrolling="no" title="demo"></iframe></div></div>
+</div></section>
+
+<section id="luotokoti"><div class="w case">
+<div class="side rv"><div class="num"><em>04</em> / 05</div><h2>Luotokoti: a walk through the house</h2>
+<p>The house turns and opens as you scroll: roof, floor plan and decks. Live on luotokoti.fi.</p>
+<div class="learn"><p>Scroll is the best controller: the user sets the pace, the image tells the story.</p></div></div>
+<div class="scrub" style="--len:450"><div class="pin"><iframe data-src="demot/luotokoti-kierros.html" tabindex="-1" scrolling="no" title="demo"></iframe></div></div>
+</div></section>
+
+<section class="tint" id="kaskipuu"><div class="w case">
+<div class="side rv"><div class="num"><em>05</em> / 05</div><h2>Kaskipuu: a window, cut open</h2>
+<p>A window corner with its profiles, glass and seals. As you scroll, the model comes apart. This is 3D, but the idea is the same: profiles are dimensions, and the image is drawn from them.</p>
+<div class="learn"><p>When you draw with numbers, moving from SVG to 3D needs no new way of working.</p></div></div>
+<div class="scrub" style="--len:400"><div class="pin"><iframe data-src="demot/kaskipuu-nurkka/index.html" tabindex="-1" scrolling="no" title="demo"></iframe></div></div>
+</div></section>
+
+<section id="skillit"><div class="w">
+<div class="rv"><h2>The skills behind it</h2>
+<p class="lead" style="margin-top:24px">A skill is a written brief for Claude. The same brief every time means the same quality every time.</p></div>
+<div class="skills">
+<div class="sk main rv"><div><span class="tag" style="background:var(--blue)">My own skill</span><h3 style="font-size:36px">svg-piirto</h3></div>
+<p>Every image is drawn from real dimensions, always by a drawing machine. It handles isometric views, exploded and section views, and product catalogues. Claude checks every image before showing it.</p></div>
+<div class="sk rv"><span class="tag" style="background:var(--teal)">Technical drawing</span><h3>anatomy</h3><p>Interactive isometric figures: four shading tones, correct draw order and calm motion.</p></div>
+<div class="sk rv"><span class="tag" style="background:var(--violet)">On the page</span><h3>ui-design and impeccable</h3><p>When the image lands on a page: typography, space and a critique of the whole.</p></div>
+</div>
+</div></section>
+
+<section class="tint" id="rajat"><div class="w">
+<div class="rv"><h2>Where it falls short</h2></div>
+<div class="lim rv">
+<div><b>Anything organic</b><span>People, animals, landscapes. Shapes without rules are still a job for Illustrator or an image model.</span></div>
+<div><b>One-off images</b><span>Need one picture? Just draw it. The machine pays off once you need a series.</span></div>
+<div><b>Vague briefs</b><span>Every round of iteration costs tokens. Ten minutes on the brief saves an hour of back and forth.</span></div>
+<div><b>Judging taste</b><span>Claude can check proportions and dimensions. Whether it looks good is still your call.</span></div>
+</div>
+</div></section>
+
+<section class="tint" id="kokeile-huomenna"><div class="w">
+<div class="rv"><h2>Your first prompt</h2></div>
+<div class="prompt rv">Draw <mark>[product]</mark> as an SVG from these dimensions: <mark>[table]</mark>. Don’t draw it by hand: write a generator. Isometric view, light from the top left, colours from <mark>[brand palette]</mark>. Check the render yourself before you show me.</div>
+<p class="end rv">You bring the eye.<br>Claude brings the numbers.</p>
+</div></section>
+
+<script>
+// isometrinen palkki
+const C=Math.cos(Math.PI/6),S=.5;
+function P(x,y,z,s,ox,oy){return[(ox+(x-y)*C*s).toFixed(1),(oy+(x+y)*S*s-z*s).toFixed(1)].join(',')}
+function beam(L,W,H,o){const s=o.s,ox=o.ox,oy=o.oy,p=(x,y,z)=>P(x,y,z,s,ox,oy);
+const top=[p(0,0,H),p(L,0,H),p(L,W,H),p(0,W,H)],side=[p(0,W,0),p(L,W,0),p(L,W,H),p(0,W,H)],end=[p(L,0,0),p(L,W,0),p(L,W,H),p(L,0,H)];
+let lam='';for(let z=45;z<H;z+=45){lam+=`<line x1="${p(L,0,z).split(',')[0]}" y1="${p(L,0,z).split(',')[1]}" x2="${p(L,W,z).split(',')[0]}" y2="${p(L,W,z).split(',')[1]}"/>`;
+lam+=`<line class="sl" x1="${p(0,W,z).split(',')[0]}" y1="${p(0,W,z).split(',')[1]}" x2="${p(L,W,z).split(',')[0]}" y2="${p(L,W,z).split(',')[1]}"/>`}
+return{top,side,end,lam}}
+function poly(pts,cls,fill){return`<polygon ${cls?`class="${cls}"`:''} points="${pts.join(' ')}" ${fill?`fill="${fill}"`:''}/>`}
+
+// hero
+(function(){const b=beam(1000,120,360,{s:.47,ox:70,oy:170});const svg=document.getElementById('heroArt');
+svg.innerHTML=`<g class="fillin">${poly(b.top,'','#f3f6fe')}${poly(b.side,'','#dfe6fa')}${poly(b.end,'','#c9d5f7')}</g>
+<g>${[b.top,b.side,b.end].map(f=>poly(f,'draw')).join('')}</g>
+<g class="fillin" stroke="#003cff" stroke-opacity=".18" stroke-width="1">${b.lam}</g>
+<circle class="fillin" cx="${b.end[2].split(',')[0]}" cy="${b.end[2].split(',')[1]}" r="7" fill="#003cff" stroke="#fff" stroke-width="2"/>`;
+svg.querySelectorAll('.draw').forEach((e,i)=>{const l=e.getTotalLength?e.getTotalLength():2000;e.style.setProperty('--len',l);e.style.animationDelay=(i*.35)+'s'})})();
+
+// leikkikenttä
+const iw=document.getElementById('iw'),ih=document.getElementById('ih'),il=document.getElementById('il'),bs=document.getElementById('beam');
+function render(){const W=+iw.value,H=+ih.value,L=+il.value;
+['w','h','l'].forEach((k,i)=>{const v=[W,H,L][i];document.getElementById('v'+k).textContent=v;document.getElementById('c'+k).textContent=v});
+const b=beam(L,W,H,{s:.4,ox:136,oy:187});
+bs.innerHTML=`${poly(b.top,'','#f3dfb6')}${poly(b.side,'','#dcb57a')}${poly(b.end,'','#c8955a')}
+<g stroke="#8a5a2b" stroke-opacity=".45" stroke-width="1">${b.lam}</g><style>.sl{stroke-opacity:.25}</style>
+<g fill="none" stroke="#000e39" stroke-width="1.2" stroke-linejoin="round">${poly(b.top)}${poly(b.side)}${poly(b.end)}</g>
+<text x="28" y="44" font-family="Outfit" font-size="20" font-weight="500" fill="#000e39">${W} × ${H} × ${L} mm</text>`}
+[iw,ih,il].forEach(e=>e.addEventListener('input',render));render();
+
+// välilehdet
+document.querySelectorAll('.pills').forEach(t=>t.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+t.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));const f=document.getElementById(t.dataset.for);f.src=b.dataset.src;f.closest('.frame').querySelector('.bar a').href=b.dataset.src}));
+
+// paljastus ja pisteet
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ro.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.rv,.flow').forEach(e=>ro.observe(e));
+const secs=[...document.querySelectorAll('header,section')],dots=document.getElementById('dots');
+
+
+
+// otsikon sanat
+(function(){const h=document.querySelector('.hero h1');let d=.15;[...h.childNodes].forEach(n=>{if(n.nodeType===3){const f=document.createDocumentFragment();n.textContent.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w)){f.appendChild(document.createTextNode(w));return}const m=document.createElement('span');m.className='wm';const i=document.createElement('span');i.className='wd';i.style.animationDelay=d+'s';d+=.09;i.textContent=w;m.appendChild(i);f.appendChild(m)});n.replaceWith(f)}else if(n.nodeName==='BR'){}else{n.classList.add('wd');n.style.animationDelay=d+'s'}})})();
+// hehku seuraa hiirtä
+
+// edistymispalkki
+const prog=document.getElementById('prog');addEventListener('scroll',()=>{const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+document.querySelectorAll('.zoom').forEach(e=>ro.observe(e));
+// sarja
+const SER=[[48,123],[48,148],[48,198],[66,225],[66,270],[90,270],[90,315],[115,315],[115,360],[140,360],[140,405],[165,450]];
+document.getElementById('go').addEventListener('click',()=>{const el=document.getElementById('series');el.innerHTML='';SER.forEach(([w,h],i)=>{const b=beam(700,w,h,{s:.36,ox:28,oy:178});const f=document.createElement('figure');
+f.innerHTML=`<svg viewBox="0 0 300 260">${poly(b.top,'','#f3dfb6')}${poly(b.side,'','#dcb57a')}${poly(b.end,'','#c8955a')}<g stroke="#8a5a2b" stroke-opacity=".4" stroke-width=".8">${b.lam}</g><g fill="none" stroke="#000e39" stroke-width="1">${poly(b.top)}${poly(b.side)}${poly(b.end)}</g></svg><figcaption>${w} × ${h}</figcaption>`;
+el.appendChild(f);setTimeout(()=>f.classList.add('on'),80*i+30)});el.scrollIntoView({behavior:'smooth',block:'center'})});
+
+// vieritys ajaa demoja
+const scrubs=[...document.querySelectorAll('.scrub')];
+const st=scrubs.map(el=>({el,f:el.querySelector('iframe'),t:0,c:-1,sent:-1}));
+function target(){st.forEach(o=>{const r=o.el.getBoundingClientRect();o.vis=r.bottom>-innerHeight*.5&&r.top<innerHeight*1.5;o.t=Math.min(1,Math.max(0,-r.top/Math.max(1,r.height-innerHeight)))})}
+let running=false;function tick(){let busy=false;st.forEach(o=>{if(!o.vis)return;if(o.c<0)o.c=o.t;o.c+=(o.t-o.c)*0.16;if(Math.abs(o.t-o.c)<0.0005)o.c=o.t;else busy=true;if(Math.abs(o.c-o.sent)>0.0004&&o.f.contentWindow){o.f.contentWindow.postMessage({svgp:o.c},'*');o.sent=o.c}});if(busy)requestAnimationFrame(tick);else running=false}
+function drive(){target();if(!running){running=true;requestAnimationFrame(tick)}}
+addEventListener('scroll',drive,{passive:true});st.forEach(o=>o.f.addEventListener('load',()=>{o.sent=-1;drive()}));drive();
+
+// hero: linjasto skaalataan sopimaan
+(function(){const box=document.querySelector('.hero-line');if(!box)return;const f=box.querySelector('iframe');
+function fit(){const cw=box.clientWidth,ch=box.clientHeight,k=cw/820;f.style.transform=`translate(${cw/2-955*k}px,${ch/2-475*k}px) scale(${k})`}
+fit();addEventListener('resize',fit)})();
+
+// demot ladataan vasta lähellä näkymää ja vapautetaan kaukana
+(function(){const fr=[...document.querySelectorAll('iframe[data-src]')];
+function chk(){const H=innerHeight;fr.forEach(f=>{const box=f.closest('.scrub,.embed')||f;const r=box.getBoundingClientRect();const near=r.bottom>-H*1.5&&r.top<H*2.5;const far=r.bottom<-H*4||r.top>H*5;
+if(near&&!f.getAttribute('src')){f.src=f.dataset.src}else if(far&&f.getAttribute('src')){f.removeAttribute('src');f.src='about:blank';f.removeAttribute('src')}})}
+addEventListener('scroll',()=>requestAnimationFrame(chk),{passive:true});chk()})();
+</script>
+</body></html>
