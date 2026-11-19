@@ -4,7 +4,7 @@ A designer talk about making SVG illustrations with Claude: instead of asking fo
 
 The talk is one long scrolling page (`index.html`). Demos from five client projects (GRK, BCE, Finmatec, Luotokoti, Kaskipuu) are embedded as iframes from `demot/`, and scrolling the talk drives their animations through `postMessage`. The files the demos need (CSS, JS, fonts, images) are copied under `assets/`, mirroring each project's own folder structure, so all paths are relative.
 
-The demos are unfinished client prototypes. Keep this repository private.
+Live version: https://ollirimpilainen.github.io/svg-illustration-talk/
 
 ## Run locally
 
